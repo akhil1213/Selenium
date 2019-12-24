@@ -7,7 +7,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-
+//line 28 and 29 , fill in username/password
 public class Selenium {
 	WebDriver driver;//Selenium WebDriver drives a browser natively, as a real user would, either locally or on remote machines.
 	public void invokeBrowser() {
@@ -25,8 +25,8 @@ public class Selenium {
 		}
 	}
 	private void login() throws InterruptedException {
-		driver.findElement(By.id("CUNYfirstUsernameH")).sendKeys("akhil.khanna52@login.cuny.edu");
-		driver.findElement(By.id("CUNYfirstPassword")).sendKeys("Akhil23525052");
+		driver.findElement(By.id("CUNYfirstUsernameH")).sendKeys("username");
+		driver.findElement(By.id("CUNYfirstPassword")).sendKeys("password");
 		Thread.sleep(2000);
 		driver.findElement(By.tagName("button")).click();
 		driver.findElement(By.linkText("Student Center")).click();
