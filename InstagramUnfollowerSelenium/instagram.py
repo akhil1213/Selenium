@@ -1,53 +1,40 @@
 from selenium import webdriver
 from time import sleep
+from logincredentials import username,password
 class InstaBot:
     def __init__(self):
-        unfollowers = self.list_of_unfollowers()
-        print(unfollowers)
+        self.unfollowers = self.list_of_unfollowers()
+        
         self.driver = webdriver.Chrome()
         self.driver.get("https://instagram.com")
-        sleep(0.5)
-        self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[2]/div/label/input").send_keys("blank")
-        self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[3]/div/label/input").send_keys("blank") 
-        sleep(0.8)
-        self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[4]/button").click()
+        sleep(3)
+        self.login()
+        
         #logged in at this point
-        sleep(5)
+        sleep(4)
+        #click Not now since its in my way and then click on a tag to go on my profile
         self.driver.find_element_by_xpath("//button[contains(text(),'Not Now')]").click()
-        self.driver.find_element_by_xpath("//a[contains(text(),'younginwabeard')]").click()
-        sleep(2)
+        self.driver.find_element_by_xpath("//a[contains(text(),'" + username + "')]").click()
+        sleep(4)
+        
         # self.driver.find_element_by_xpath("/html/body/div[1]/section/main/div/ul/li[3]/a/span").click()
+        
         self.open_followers()
-        sleep(1)
-
+        sleep(3)
+        #get all of the seen elements inside of followers
         elements = self.driver.find_elements_by_xpath("/html/body/div[4]/div/div[2]/ul/div/li")
-        # /html/body/div[3]/div/div[2]/ul/div/li/div/div[2]/div/div/div/a
-        #get following button
-
-        div_parent_of_button = elements[0].find_element_by_xpath(".//div/div[3]")
-        button = div_parent_of_button.find_element_by_xpath(".//button")
-        print(div_parent_of_button.get_attribute("class"))
-        # button = button.find_element_by_xpath(".//button")
-
-        for i in range(len(elements)):
-            div_parent_of_a_tag = elements[i].find_element_by_xpath(".//div/div[2]/div")
-            current_username = div_parent_of_a_tag.find_element_by_xpath(".//a")
-            current_username = current_username.get_attribute("title")
-            if current_username in unfollowers:
-                button = elements[i].find_element_by_xpath(".//div/div[3]")
-                button = button.find_element_by_xpath(".//button")
-                button.click()
-                unfollow_button = driver.find_element_by_xpath("/html/body/div[5]/div/div/div[3]/button[1]")
-                unfollow_button.click()
-                print(current_username)
-            # print(current_username.get_attribute("title"))
-        # /html/body/div[4]/div/div[2]/ul/div/li[1]/div/div[2]/div/div/div/a
-        # scroll_to_last_element_to_refresh = elements[len(elements)-1]
-        # for element in elements:
-        #     print(element.find_element_by_xpath("/div/div[1]/div[2]/div[1]/a"))
-        # sugs = self.driver.find_element_by_xpath('//h4[contains(text(), Suggestions)]')
-        # self.driver.excute_script('arguments[0].scrollIntoView()', sugs)
-        sleep(1)
+        index = 0
+        while True:
+            self.loop_through_followers(elements,index)
+            #now scroll down to the last follower seen so it reloads and shows more followers after looping through current followers
+            scroll_to_last_element_to_refresh = elements[index+11]
+            self.driver.execute_script('arguments[0].scrollIntoView()', scroll_to_last_element_to_refresh)
+            #elements must be recomputed because the page has refreshed with more 'following' users since it has scrolled to the 7th user.
+            sleep(3)
+            elements = self.driver.find_elements_by_xpath("/html/body/div[4]/div/div[2]/ul/div/li")
+            print(len(elements))
+            index+=6#because your checking 
+        sleep(2)
         # scroll_box = self.driver.find_element_by_xpath("/html/body/div[3]/div/div[2]")
         # last_ht, ht = 0,1
         # while last_ht != ht:
@@ -57,6 +44,12 @@ class InstaBot:
         #     arguments[0].scrollTo(0,arguments[0].scrollHeight);
         #     return arguments[0].scrollHeight;
         #     """, scroll_box)
+    def login(self):
+        sleep(0.5)
+        self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[2]/div/label/input").send_keys(username)
+        self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[3]/div/label/input").send_keys(password) 
+        sleep(0.8)
+        self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[4]/button").click()
     def open_followers(self):
         self.driver.find_element_by_xpath("//a[contains(@href,'/following')]").click()
     def list_of_unfollowers(self):
@@ -72,4 +65,23 @@ class InstaBot:
                 line = fp.readline()
                 cnt+=1
         return unfollowers
+    def loop_through_followers(self,elements,i):
+        
+        while i < i+6:
+            div_parent_of_a_tag = elements[i].find_element_by_xpath(".//div/div[2]/div")
+            current_username = div_parent_of_a_tag.find_element_by_xpath(".//a")
+            current_username = current_username.get_attribute("title")
+            if current_username in self.unfollowers:
+                button = elements[i].find_element_by_xpath(".//div/div[3]")
+                button = button.find_element_by_xpath(".//button")
+                button.click()
+                print(current_username + "doesnt follow you but can't find that button")
+                sleep(5)
+                unfollow_button = self.driver.find_element_by_xpath("/html/body/div[5]/div/div/div[3]/button[1]")
+                unfollow_button.click()
+                sleep(5)
+            print(current_username + "follows you")
+            i+=1
+            if i >= len(elements):
+                break
 myBot = InstaBot()
