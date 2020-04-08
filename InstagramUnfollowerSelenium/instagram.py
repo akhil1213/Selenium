@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 from selenium import webdriver
 from time import sleep
 from logincredentials import username,password
@@ -94,3 +96,4 @@ class InstaBot:
             if i >= len(elements):
                 break
 myBot = InstaBot()
+>>>>>>> 5822adac4005a265e3689c7bdefe6e432b08c587
