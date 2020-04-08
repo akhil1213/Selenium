@@ -3,7 +3,7 @@ from time import sleep
 
 class TinderScraper():
     def __init__(self):
-        self.driver = webdriver.Chrome('/Users/akhilkhanna/Downloads/chromedriver')
+        self.driver = webdriver.Chrome('/home/akhil/Downloads/chromedriver')
         self.driver.get("https://tinder.com")
         self.driver.maximize_window()
         sleep(2)
@@ -16,7 +16,7 @@ class TinderScraper():
         elements = self.driver.find_elements_by_xpath("/html/body/div[2]/div/div/div/div/div[3]/span/div")
 
         print(elements[0].find_element_by_xpath(".//button").get_attribute("aria-label"))
-        sleep(5)
+        sleep(2)
         phoneNumberElement = None
         for element in elements:
             print(element.find_element_by_xpath(".//button").get_attribute("aria-label"))
@@ -32,9 +32,6 @@ class TinderScraper():
         print('Enter the code given to you from tinder:')
         code_from_tinder = input()
 
-
-        #put the code in received from phone number.
-        
         self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div[2]/div[3]/input[1]").send_keys(code_from_tinder[0])
         self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div[2]/div[3]/input[2]").send_keys(code_from_tinder[1])
         self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div[2]/div[3]/input[3]").send_keys(code_from_tinder[2])
@@ -52,23 +49,37 @@ class TinderScraper():
         # self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/div/div[2]/div/div").click()
         # sleep(5)
         # self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div/div/div[3]/button[2]").click()
-        scraped_bios = open("scraped_bios.txt", "w")
+        self.clickButton("/html/body/div[2]/div/div/div[2]/button")
+        sleep(5)
+        scraped_bios = open("scraped.txt", "w")
+        person=0
         while True:
-            name = self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/div/div[1]/div/div/span").getText()
-            print(name)
-            bio = self.readBio("/html/body/div[1]/div/div[1]/div/div/main/div/div/div[1]/div/div[2]/div[2]/div/span")
+            if person == 6:
+
+                sleep(2)#get rid of popup after 6th person has been swiped.
+                self.clickButton("/html/body/div[2]/div/div/div[2]/button[2]")
+            sleep(1)
+            self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button")#click info button
+            sleep(1)
+            name = self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[1]/div/div[1]/div/h1").text
+            bio = self.readBio("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[2]/div/span")
             print(bio)
             scraped_bios.write(name + "\'s bio is: " + bio + "\n")
-            sleep(2)
-        #like her and move on to the next
-            self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[2]/div/div/div[4]/button")
+            sleep(1)
+        #dislike her and move on to the next
+            self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[2]/div/div/div[2]/button")
     def clickButton(self,xpath):
-        self.driver.find_element_by_xpath(xpath).click()
+        button = self.driver.find_element_by_xpath(xpath)
+        if button != None:
+            button.click()
+        else:
+            print(button)
     def readBio(self,xpath):
         bioElements = self.driver.find_elements_by_xpath(xpath)
         currentBio = ""
         for element in bioElements:
-            if element.get_attribute("class") == None:
-                currentBio+= element.getText()
+            print(element.get_attribute("class"))
+            if element.text!="" and element.text!="\n":
+                currentBio+= element.text
         return currentBio
 myBot = TinderScraper()
