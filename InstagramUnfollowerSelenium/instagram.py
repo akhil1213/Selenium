@@ -29,7 +29,8 @@ class InstaBot:
         # button.click()
         index = 0
         while True:
-            self.loop_through_followers(elements,index)
+            if index>500:
+                self.loop_through_followers(elements,index)
             #now scroll down to the last follower seen so it reloads and shows more followers after looping through current followers
             scroll_to_last_element_to_refresh = elements[index+6]
             self.driver.execute_script('arguments[0].scrollIntoView()', scroll_to_last_element_to_refresh)
