@@ -59,21 +59,31 @@ class TinderScraper():
                 sleep(2)#get rid of popup after 6th person has been swiped.
                 self.clickButton("/html/body/div[2]/div/div/div[2]/button[2]")
             sleep(1)
-            self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button")#click info button
+
+            clickInfoWorked = self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button")#click info button
+            if clickInfoWorked == False:
+                self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[7]/button")
+            # self.driver.find_element_by_class_name("Pos(a) P(0) End(16px) B(40px) Trsdu($normal) Sq(28px) Bdrs(50%) Cur(p) Ta(c) Fl(end) Scale(1.2):h focus-button-style").click()
             sleep(1)
             name = self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[1]/div/div[1]/div/h1").text
             bio = self.readBio("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[2]/div/span")
+            try:
+                miles = self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div/div/div[2]/div/div[2]").text
+            except:
+                miles = "None"
             print(bio)
-            scraped_bios.write(name + "\'s bio is: " + bio + "\n")
+            scraped_bios.write(name + "\'s bio is: " + bio + " miles:" + miles + "\n")
             sleep(1)
         #dislike her and move on to the next
             self.clickButton("/html/body/div[1]/div/div[1]/div/main/div[1]/div/div/div[1]/div[2]/div/div/div[2]/button")
+            person+=1
     def clickButton(self,xpath):
-        button = self.driver.find_element_by_xpath(xpath)
-        if button != None:
-            button.click()
-        else:
-            print(button)
+        try:
+            button = self.driver.find_element_by_xpath(xpath)
+        except:
+            return False
+        button.click()
+        return True
     def readBio(self,xpath):
         bioElements = self.driver.find_elements_by_xpath(xpath)
         currentBio = ""
