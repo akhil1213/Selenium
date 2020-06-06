@@ -1,2 +1,0 @@
-username="XXXXXXXXXXXX"
-password="XXXXXXXXXXXX"

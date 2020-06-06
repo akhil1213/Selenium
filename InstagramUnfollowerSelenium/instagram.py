@@ -1,15 +1,20 @@
 from selenium import webdriver
 from time import sleep
-from logincredentials import username,password
+# from logincredentials import username,password
+import sys
+
 class InstaBot:
     def __init__(self):
+        username = sys.argv[1]
+        password = sys.argv[2]
         self.unfollowers = self.list_of_unfollowers()
-        
+        print(username)
+        # self.unfollowers = self.list_of_unfollowers()
         self.driver = webdriver.Chrome('/home/akhil/Downloads/chromedriver')
         self.driver.get("https://instagram.com")
         self.driver.maximize_window()
         sleep(3)
-        self.login()
+        self.login(username,password)
         
         #logged in at this point
         sleep(4)
@@ -48,7 +53,7 @@ class InstaBot:
         #     arguments[0].scrollTo(0,arguments[0].scrollHeight);
         #     return arguments[0].scrollHeight;
         #     """, scroll_box)
-    def login(self):
+    def login(self,username,password):
         sleep(0.5)
         self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[2]/div/label/input").send_keys(username)
         self.driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div[3]/div/label/input").send_keys(password) 
@@ -71,7 +76,7 @@ class InstaBot:
         return unfollowers
     def loop_through_followers(self,elements,i):
         end = i + 6
-        while i < end:
+        while i < end and i > 200:
             div_parent_of_a_tag = elements[i].find_element_by_xpath(".//div/div[2]/div")
             current_username = div_parent_of_a_tag.find_element_by_xpath(".//a")
             current_username = current_username.get_attribute("title")
